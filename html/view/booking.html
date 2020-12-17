@@ -1,0 +1,116 @@
+<?php
+  include("../model/getAppInfo.php");
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>PawPals - Booking</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="../view/css/main.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+</head>
+
+<body>
+
+  <nav class="navbar">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a href="../model/homepage.php"><img class="logo" alt="Logo"
+            src="../view/images/logo-transparent.png"></img></a>
+      </div>
+      <div class="collapse navbar-collapse" id="myNavbar">
+        <ul class="nav navbar-nav">
+          <li><a id="nav-link" href="../model/homepage.php">Home</a></li>
+          <li class="active"><a id="nav-link" href="../model/booking.php">Create a Booking</a></li>
+          <li><a id="nav-link" href="../model/applications.php">Applications</a></li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+          <li><a id="nav-link" href="../view/login.html"><span class="glyphicon glyphicon-log-in"></span> Sign Out</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container-fluid text-center">
+    <div class="row content">
+      <div class="col-sm-2 sidenav">
+        <br>
+        <img class="profpic" src="../view/images/index.jpg"></img>
+      </div>
+      <div class="col-sm-8 text-left">
+
+        <div class="header">
+          <h1>Create a booking</h1>
+        </div>
+
+        <p> Fill out the form below to upload a day that you would like your pet to be watched on.</p>
+        <hr>
+        <h3>Pet information</h3>
+        <form action="../model/createABooking.php" method='POST' autocomplete="on" id="form1">
+          <label for="Pname">Pet name:</label>
+          <input type="text" id="Pname" name="Pname" required autocomplete><br><br>
+
+          <label for="AType">Type Of Animal:</label>
+          <input type="text" id="AType" name="AType" required autocomplete><br><br>
+
+          <label for="Breed">Breed:</label>
+          <input type="text" id="Breed" name="Breed" required autocomplete><br><br>
+
+          <label for="SDate"> Start Date:</label>
+          <input type="date" id="SDate" name="SDate" required><br><br>
+
+          <label for="EDate"> End Date:</label>
+          <input type="date" id="EDate" name="EDate" required><br><br>
+
+          <input type="submit" id="submitButton" value="Submit"><br><br>
+        </form>
+        <p> The next step will be to confirm a pet sitter's request to watch your pet pal.
+          Check your Applications page to confirm those requests! </p>
+      </div>
+
+      <div class="col-sm-2 sidenav">
+        
+        <?php
+
+          for($i = 0; $i < count($applications2DArray); $i++)
+          {
+            if(strcmp($applications2DArray[$i][3], "closed") == 0)
+            {
+              echo "  <div class='well'> ";
+              echo "    <p> ";
+              echo "Dates: " . $applications2DArray[$i][11] . " to " . $applications2DArray[$i][12];
+              echo "<br>";
+              echo "" . $applications2DArray[$i][5]. " " .$applications2DArray[$i][6];
+              echo "     <br> ";
+              echo "     Contact by: " . $applications2DArray[$i][2];
+              echo "     <br> ";
+              echo "" . $applications2DArray[$i][7]. ", " . $applications2DArray[$i][8] . " " . $applications2DArray[$i][9] . " " . $applications2DArray[$i][10];
+              echo "   </p> ";
+              echo "  </div> ";
+            }
+          }
+        ?>
+
+      </div>
+    </div>
+  </div>
+
+  <footer class="container-fluid text-center">
+    <p>PawPals Inc. Copyright 2020</p>
+  </footer>
+
+</body>
+
+</html>

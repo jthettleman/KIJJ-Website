@@ -1,0 +1,196 @@
+<?php
+  include("../model/getAppInfo.php");
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>PawPals - Home</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="../view/css/main.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <script src="https://js.stripe.com/v3/"></script>
+
+</head>
+
+<body>
+
+  <nav class="navbar">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a href="../model/homepage.php"><img class="logo" alt="Logo" src="../view/images/logo-transparent.png"></img></a>
+      </div>
+      <div class="collapse navbar-collapse" id="myNavbar">
+        <ul class="nav navbar-nav">
+          <li class="active"><a id="nav-link" href="#">Home</a></li>
+          <li><a id="nav-link" href="../model/booking.php">Create a Booking</a></li>
+          <!--<li><a id="nav-link" href="../view/petOwnerInfoTest.html">Test</a></li>-->
+          <li><a id="nav-link" href="../model/applications.php">Applications</a></li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+          <li><a id="nav-link" href="../view/login.html"><span class="glyphicon glyphicon-log-in"></span> Sign Out</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container-fluid text-center">
+    <div class="row content">
+      <div class="col-sm-2 sidenav">
+        <br>
+        <img class="profpic" src="../view/images/index.jpg"></img>
+        <br><br>
+        <button id="editButton" class="button">Edit Profile</button>
+
+        <script type="text/javascript">
+          document.getElementById("editButton").onclick = function () {
+            location.href = "../model/editProfile.php";
+          };
+
+          function pause(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+          }
+
+          function homeList(buttonId) {
+            request = $.ajax({
+              url: "../model/delBooking.php",
+              type: "post",
+              data: {
+                date: "" + buttonId
+              }
+            });
+
+            setTimeout(() => {
+              window.location.reload();
+            }, 1000);
+          }
+        </script>
+
+      </div>
+      <div class="col-sm-8 text-center">
+
+        <div class="header">
+          <h1>Welcome back <?=$first ?>!</h1>
+        </div>
+
+        <h3> My Info: </h3>
+        <p> <?=$petName ?> : <?=$petType ?> </p>
+        <p> Membership Valid Until: <?=$memberStatus ?> </p>
+
+        <button 
+          id="checkout-button-price_1HtiwVBc0OuHpbYdOa3efUON" 
+          class='btn membership' 
+          role="link" 
+          type="button" 
+          style='padding: 5px 10px; '> Renew Membership 
+        </button>
+
+        <script>
+          //java script for stripe -- membership renewal
+          (function() {
+            var stripe = Stripe('pk_test_51HtiWNBc0OuHpbYdMvcjhfV8An1WDhc2bbhOiab22zLqtjFxXYjrqm4A0Y8hvx8WFeLAhKp8D0FJlE81hvLjdURh005n0R2jmr');
+          
+            var checkoutButton = document.getElementById('checkout-button-price_1HtiwVBc0OuHpbYdOa3efUON');
+            checkoutButton.addEventListener('click', function () {
+              // When the customer clicks on the button, redirect
+              // them to Checkout.
+              stripe.redirectToCheckout({
+                lineItems: [{price: 'price_1HtiwVBc0OuHpbYdOa3efUON', quantity: 1}],
+                mode: 'subscription',
+                // Do not rely on the redirect to the successUrl for fulfilling
+                // purchases, customers may not always reach the success_url after
+                // a successful payment.
+                // Instead use one of the strategies described in
+                // https://stripe.com/docs/payments/checkout/fulfill-orders
+                successUrl: window.location.protocol + '//kijj.cs.loyola.edu/model/updateMembership.php',
+                cancelUrl: window.location.protocol + '//kijj.cs.loyola.edu/view/homepage.php',
+              })
+              .then(function (result) {
+                if (result.error) {
+                  // If `redirectToCheckout` fails due to a browser or network
+                  // error, display the localized error message to your customer.
+                  var displayError = document.getElementById('error-message');
+                  displayError.textContent = result.error.message;
+                }
+              });
+            });
+          })();
+        </script>
+
+        <hr>
+
+        <div class="header">
+          <h3> Pet information </h3>
+        </div>
+
+        <h5> Pet Name: <?=$petName ?> </h5>
+        <h5> State: <?=$state ?> </h5>
+        <h5> City: <?=$city ?> </h5>
+        <h5> Description: <?=$description ?> </h5>
+
+        <div class="header">
+          <h3> Current Bookings </h3>
+        </div>
+        <br>
+        <center>
+          <?php
+            $count = 0;
+            while($row = $dateInfo->fetch_assoc())
+            {
+              echo "<div class='row' style='background-color:#1C9DE3; border-color: #FDD451; border: 2px solid #FDD451; width: 60%;'><br>";
+              $startDate = $row['startDate'];
+              echo "<h4 style='display: inline;'>Dates: ". $row['startDate'] ." to " . $row['endDate'] . " --- Status: " . $row['currentStatus'] . "</h4>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<button id='$startDate' class='btn danger' onClick='homeList(this.id)' style='padding: 5px 10px; '>Delete</button><br><br></div><br>";
+              $count++;
+            }
+          ?>
+        </center>
+
+      </div>
+
+
+      <div class="col-sm-2 sidenav">
+
+        <?php
+
+          for($i = 0; $i < count($applications2DArray); $i++)
+          {
+            if(strcmp($applications2DArray[$i][3], "closed") == 0)
+            {
+              echo "  <div class='well'> ";
+              echo "    <p> ";
+              echo "Dates: " . $applications2DArray[$i][11] . " to " . $applications2DArray[$i][12];
+              echo "<br>";
+              echo "" . $applications2DArray[$i][5]. " " .$applications2DArray[$i][6];
+              echo "     <br> ";
+              echo "     Contact by: " . $applications2DArray[$i][2];
+              echo "     <br> ";
+              echo "" . $applications2DArray[$i][7]. ", " . $applications2DArray[$i][8] . " " . $applications2DArray[$i][9] . " " . $applications2DArray[$i][10];
+              echo "   </p> ";
+              echo "  </div> ";
+            }
+          }
+        ?>
+
+      </div>
+    </div>
+  </div>
+
+  <footer class=".footer-margin text-center">
+    <div class="container">
+      <p>PawPals Inc. Copyright 2020</p>
+    </div>
+  </footer>
+
+</body>
+
+</html>

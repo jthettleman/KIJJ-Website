@@ -1,0 +1,268 @@
+<?php
+  include("../model/getAppInfo.php");
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>PawPals - Applications</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="../view/css/main.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+
+<body>
+
+  <nav class="navbar">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a href="../model/homepage.php"><img class="logo" alt="Logo"
+            src="../view/images/logo-transparent.png"></img></a>
+      </div>
+      <div class="collapse navbar-collapse" id="myNavbar">
+        <ul class="nav navbar-nav">
+          <li><a id="nav-link" href="../model/homepage.php">Home</a></li>
+          <li><a id="nav-link" href="../model/booking.php">Create a Booking</a></li>
+          <li class="active"><a id="nav-link" href="../model/applications.php">Applications</a></li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+          <li><a id="nav-link" href="../view/login.html"><span class="glyphicon glyphicon-log-in"></span> Sign Out</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container-fluid text-center">
+    <div class="row content">
+      <div class="col-sm-2 sidenav">
+        <br>
+        <img class="profpic" src="../view/images/index.jpg"></img>
+      </div>
+      <div class="col-sm-8 text-left">
+
+        <div class="header">
+          <h1>Applications:</h1>
+        </div>
+
+        <p> Here are some requests waiting for your approval </p>
+        <hr>
+        <h3>Pet Sitters: </h3>
+        <br>
+
+        <script type="text/javascript">
+
+          function confirmApp(info)
+          {
+            var res = info.split(" ");
+
+            request = $.ajax({
+              url: "../model/approveApp.php",
+              type: "post",
+              data: {
+                sitterEmail: "" + res[0],
+                booking: "" + res[1] 
+              }
+            });
+
+            setTimeout(() => {
+              window.location.reload();
+            }, 1000);
+            
+          }
+
+          function denyApp(info)
+          {
+            var res = info.split(" ");
+
+            request = $.ajax({
+              url: "../model/denyApp.php",
+              type: "post",
+              data: {
+                sitterEmail: "" + res[0],
+                booking: "" + res[1] 
+              }
+            });
+
+            setTimeout(() => {
+              window.location.reload();
+            }, 1000);
+          }
+
+        </script>
+
+        <?php
+          $colorSwitcher = 0;
+
+          if(count($applications2DArray) == 0)
+          {
+            echo "There aren't any current applications for your bookings";
+          }
+          else
+          {
+            for($i = 0; $i < count($applications2DArray); $i++)
+            {
+              if(strcmp($applications2DArray[$i][3], "closed") != 0)
+              {
+                if($colorSwitcher == 0)
+                {
+                  echo "  <div class='row' style='background-color: #FDD451;'>";
+                  echo "  <h2>" . $applications2DArray[$i][5]. " " .$applications2DArray[$i][6]."  </h2>";
+                  echo "  <p>Dates Requested: " . $applications2DArray[$i][11] . " to " . $applications2DArray[$i][12] . "</p>";
+                  echo "  <p>Contact by: " . $applications2DArray[$i][2] . "</p>";
+                  //echo "  <p>Rating: 4.3/5</p>";
+
+                  $sitterE = $applications2DArray[$i][2];
+                  $bookID = $applications2DArray[$i][0];
+
+                  echo "  <button class='btn success' id='$sitterE $bookID' onClick='confirmApp(this.id)'>Confirm</button>";
+                  echo "  <button class='btn danger' id='$sitterE $bookID' onClick='denyApp(this.id)'>Deny</button>";
+                  echo "  <br><br>";
+                  echo "  </div>";
+                  $colorSwitcher = 1;
+                }
+
+                elseif($colorSwitcher == 1)
+                {
+                  echo "  <div class='row' style='background-color: #1C9DE3;'>";
+                  echo "  <h2>" . $applications2DArray[$i][5]. " " .$applications2DArray[$i][6]."  </h2>";
+                  echo "  <p>Dates Requested: " . $applications2DArray[$i][11] . " to " . $applications2DArray[$i][12] . "</p>";
+                  echo "  <p>Contact by: " . $applications2DArray[$i][2] . "</p>";
+                  //echo "  <p>Rating: 4.3/5</p>";
+
+                  $sitterE = $applications2DArray[$i][2];
+                  $bookID = $applications2DArray[$i][0];
+
+                  echo "  <button class='btn success' id='$sitterE $bookID' onClick='confirmApp(this.id)'>Confirm</button>";
+                  echo "  <button class='btn danger' id='$sitterE $bookID' onClick='denyApp(this.id)'>Deny</button>";
+                  echo "  <br><br>";
+                  echo "  </div>";
+                  $colorSwitcher = 0;
+                }
+              }
+            }
+          }
+        ?>
+
+        <!--
+        <div class="row" style="background-color:#FDD451;">
+          <h2> Jenny Jen </h2>
+          <p>Date Requested: 09/19/20</p>
+          <p>Contact by: jj@yahoo.com</p>
+          <p>Rating: 4.3/5</p>
+          <button class="btn success">Confirm</button>
+          <button class="btn danger">Deny</button>
+          <br><br>
+        </div>
+        <div class="row" style="background-color:#1C9DE3;">
+          <h2> Ally Al </h2>
+          <p>Date Requested: 09/30/20</p>
+          <p>Contact by: aa@yahoo.com</p>
+          <p>Rating: 4.8/5</p>
+          <button class="btn success">Confirm</button>
+          <button class="btn danger">Deny</button>
+          <br><br>
+        </div>
+
+        <div class="row" style="background-color:#FDD451  ">
+          <h2> Bennie Ben </h2>
+          <p>Date Requested: 10/24/20</p>
+          <p>Contact by: bb@yahoo.com</p>
+          <p>Rating: 4.7/5</p>
+          <button class="btn success">Confirm</button>
+          <button class="btn danger">Deny</button>
+          <br><br>
+        </div>
+
+        <div class="row" style="background-color:#1C9DE3 ;">
+          <h2>Robbie Rob </h2>
+          <p>Date Requested: 11/21/20</p>
+          <p>Contact by: rr@yahoo.com</p>
+          <p>Rating: 4.4/5</p>
+          <button class="btn success">Confirm</button>
+          <button class="btn danger">Deny</button>
+          <br><br>
+        </div>
+        -->
+
+
+        <br><br><br><br><br><br>
+
+      </div>
+
+      <div class="col-sm-2 sidenav">
+        
+        <?php
+
+        for($i = 0; $i < count($applications2DArray); $i++)
+        {
+          if(strcmp($applications2DArray[$i][3], "closed") == 0)
+          {
+            echo "  <div class='well'> ";
+            echo "    <p> ";
+            echo "Dates: " . $applications2DArray[$i][11] . " to " . $applications2DArray[$i][12];
+            echo "<br>";
+            echo "" . $applications2DArray[$i][5]. " " .$applications2DArray[$i][6];
+            echo "     <br> ";
+            echo "     Contact by: " . $applications2DArray[$i][2];
+            echo "     <br> ";
+            echo "" . $applications2DArray[$i][7]. ", " . $applications2DArray[$i][8] . " " . $applications2DArray[$i][9] . " " . $applications2DArray[$i][10];
+            echo "   </p> ";
+            echo "  </div> ";
+          }
+        }
+      ?>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Get the elements with class="column"
+    var elements = document.getElementsByClassName("column");
+
+    // Declare a loop variable
+    var i;
+
+    // List View
+    function listView() {
+      for (i = 0; i < elements.length; i++) {
+        elements[i].style.width = "100%";
+      }
+    }
+
+    // Grid View
+    function gridView() {
+      for (i = 0; i < elements.length; i++) {
+        elements[i].style.width = "50%";
+      }
+    }
+
+    /* Optional: Add active class to the current button (highlight it) */
+    var container = document.getElementById("btnContainer");
+    var btns = container.getElementsByClassName("btn");
+    for (var i = 0; i < btns.length; i++) {
+      btns[i].addEventListener("click", function () {
+        var current = document.getElementsByClassName("active");
+        current[0].className = current[0].className.replace(" active", "");
+        this.className += " active";
+      });
+    }
+  </script>
+  <footer class="container-fluid text-center">
+    <p>PawPals Inc. Copyright 2020</p>
+  </footer>
+
+</body>
+
+</html>
